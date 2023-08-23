@@ -9,7 +9,11 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-inter)'],
+        title: ['var(--font-changa-one)'],
+        sans: ['var(--font-nunito)'],
+      },
+      backgroundImage: {
+        home: "url('~/src/assets/background.png')",
       },
     },
   },

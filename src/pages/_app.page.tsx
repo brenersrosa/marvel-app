@@ -1,9 +1,10 @@
-import '@/styles/globals.css'
+import { Changa_One, Nunito } from 'next/font/google'
+
 import type { AppProps } from 'next/app'
 
-import { Changa_One as ChangaOne, Nunito } from 'next/font/google'
+import '@/styles/globals.css'
 
-const changaOne = ChangaOne({
+const changaOne = Changa_One({
   subsets: ['latin'],
   weight: '400',
   variable: '--font-changa-one',

@@ -15,6 +15,12 @@ const config: Config = {
       backgroundImage: {
         home: "url('~/src/assets/background.png')",
       },
+      gridTemplateColumns: {
+        dashboard: '5rem repeat(2, 1fr)',
+      },
+      gridTemplateRows: {
+        dashboard: '5rem repeat(2, 1fr)',
+      },
     },
   },
   plugins: [],

@@ -1,4 +1,4 @@
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/router'
 import { ArrowRight } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -45,7 +45,7 @@ export function ClaimUsernameForm() {
     >
       <Input
         prefix="marvelapp.com/"
-        placeholder="seu-usuario"
+        placeholder="seu-nome-de-heroi"
         {...register('username')}
         message="Informe o seu nome de usuário."
         error={errors.username}

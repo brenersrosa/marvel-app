@@ -1,18 +1,18 @@
 import Image from 'next/image'
 import { GoogleLogo } from 'phosphor-react'
 
-import { Header } from '@/components/global/Header'
 import { ClaimUsernameForm } from '@/components/home/ClaimUsernameForm'
 
 import heroImage from '@/assets/hero-iron-man.png'
+import marvelLogo from '@/assets/marvel-logo.svg'
 
 export default function Home() {
   return (
-    <div className="bg-home h-screen w-screen bg-cover bg-no-repeat">
-      <Header />
-
-      <div className="mx-auto flex h-full w-full max-w-7xl items-center gap-20">
+    <div className="h-screen w-screen bg-home bg-cover bg-no-repeat">
+      <div className="w-full px-8 md:mx-auto md:flex md:h-full md:w-full md:max-w-7xl md:items-center md:gap-20 md:px-0">
         <div className="flex max-w-2xl flex-1 flex-col gap-6">
+          <Image src={marvelLogo} height={48} alt="Marvel logo." />
+
           <h1 className="font-title text-6xl leading-tight text-white">
             Seus personagens e criações favoritas
           </h1>
@@ -39,14 +39,14 @@ export default function Home() {
           </button>
         </div>
 
-        <div>
+        <div className="hidden lg:flex">
           <Image
             src={heroImage}
             height={1100}
             quality={100}
             priority
             alt="Iron Man hero image."
-            className="absolute bottom-0 right-0 max-h-full"
+            className="absolute bottom-0 right-0 max-h-full max-w-full"
           />
         </div>
       </div>

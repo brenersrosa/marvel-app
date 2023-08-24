@@ -1,27 +1,58 @@
-import Link from 'next/link'
-import Image from 'next/image'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import { CaretLeft, SignOut } from 'phosphor-react'
 
-import marvelLogo from '@/assets/marvel-logo.svg'
+import { Button } from './Button'
 
-export function Header() {
+interface FormHeaderProps {
+  title: string
+}
+
+export function Header({ title }: FormHeaderProps) {
+  const [isButtonEnabled, setIsButtonEnabled] = useState(false)
+
+  const router = useRouter()
+
+  useEffect(() => {
+    const currentPath = window.location.pathname
+    const pathLevels = currentPath.split('/')
+
+    if (pathLevels.length > 2) {
+      setIsButtonEnabled(true)
+    } else {
+      setIsButtonEnabled(false)
+    }
+  }, [])
+
+  function handleSignOut() {
+    // signOut()
+  }
+
+  const user = {
+    name: 'Brener Rosa',
+  }
+
   return (
-    <nav className="absolute flex w-full items-center justify-between py-8">
-      <div className="mx-auto flex max-w-7xl flex-1 items-center justify-between">
-        <div className="flex items-center">
-          <Link href="/">
-            <Image src={marvelLogo} width={120} alt="Marvel logo." />
-          </Link>
-        </div>
-
-        <div className="hidden lg:flex lg:items-center lg:justify-center lg:gap-4">
-          <span className="font-medium">Brener Rosa</span>
-          <img
-            src="https://github.com/brenersrosa.png"
-            alt="Profile image."
-            className="h-10 w-10 rounded-full"
+    <div className="flex h-20 w-full items-center justify-between bg-zinc-900 px-20">
+      <div className="flex h-full flex-1 items-center justify-between ">
+        {isButtonEnabled === true && (
+          <Button
+            icon={<CaretLeft size={24} />}
+            onClick={() => router.back()}
           />
-        </div>
+        )}
+        <span className="font-title text-xl font-semibold">{title}</span>
+        {!user ? (
+          <span className="font-medium">Entrar</span>
+        ) : (
+          <div className="flex items-center gap-4">
+            <span className="font-medium">{user.name}</span>
+            <button onClick={handleSignOut}>
+              <SignOut size={24} />
+            </button>
+          </div>
+        )}
       </div>
-    </nav>
+    </div>
   )
 }

@@ -42,7 +42,7 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
 
       <div
         className={clsx(
-          'focus-within:border-ignite-500 flex items-center rounded border-2 border-transparent bg-zinc-900 px-4 py-3',
+          'flex items-center rounded border-2 border-transparent bg-zinc-900 px-4 py-3 focus-within:border-red-600',
           {
             'focus-within:border-red-500': error?.message || isInvalid,
           },

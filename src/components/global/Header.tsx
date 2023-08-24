@@ -36,10 +36,12 @@ export function Header({ title }: FormHeaderProps) {
     <div className="flex h-20 w-full items-center justify-between bg-zinc-900 px-20">
       <div className="flex h-full flex-1 items-center justify-between ">
         {isButtonEnabled === true && (
-          <Button
-            icon={<CaretLeft size={24} />}
+          <button
             onClick={() => router.back()}
-          />
+            className="rounded bg-red-600 p-4 text-zinc-200 transition-colors hover:bg-red-700"
+          >
+            <CaretLeft className="h-6 w-6" />
+          </button>
         )}
         <span className="font-title text-xl font-semibold">{title}</span>
         {!user ? (

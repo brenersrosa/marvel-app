@@ -11,6 +11,7 @@ const config: Config = {
       fontFamily: {
         title: ['var(--font-changa-one)'],
         sans: ['var(--font-nunito)'],
+        barCode: ['var(--font-libre-bar-code)'],
       },
       backgroundImage: {
         home: "url('~/src/assets/background.png')",

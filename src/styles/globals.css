@@ -8,7 +8,7 @@ html {
 
 /* Personalize a barra de rolagem */
 ::-webkit-scrollbar {
-  @apply w-2 bg-zinc-700
+  @apply w-1 bg-zinc-700
 }
 
 ::-webkit-scrollbar-thumb {

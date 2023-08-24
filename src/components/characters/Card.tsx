@@ -1,6 +1,7 @@
 import Image from 'next/image'
 
 import { Character } from '@/types/marvel'
+import Link from 'next/link'
 
 interface CharacterCardProps {
   character: Character
@@ -18,6 +19,7 @@ export function Card({ character }: CharacterCardProps) {
           className="h-full w-full rounded object-cover"
         />
       </div>
+
       <div className="flex flex-col gap-2 p-4">
         <h3 className="line-clamp-1 max-w-xs font-title text-xl font-bold leading-relaxed text-zinc-100">
           {character.name}
@@ -28,6 +30,8 @@ export function Card({ character }: CharacterCardProps) {
             : character.description}
         </p>
       </div>
+
+      <Link href={`/characters/details/${character.id}`}>View Details</Link>
     </div>
   )
 }

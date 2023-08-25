@@ -13,7 +13,7 @@ export function Box({
   return (
     <Element
       {...restProps}
-      className={`flex flex-col gap-4 rounded border border-zinc-700 bg-zinc-800 p-6 ${className}`}
+      className={`flex gap-4 rounded border border-zinc-700 bg-zinc-800 p-6 ${className}`}
     />
   )
 }

@@ -80,7 +80,9 @@ export function Carousel({
           <div className="flex flex-col gap-2">
             <label className="font-semibold text-zinc-300">Title:</label>
             <strong className="text-xl font-bold text-zinc-50">
-              {data[currentImageIndex].title}
+              {data[currentImageIndex].title !== ''
+                ? data[currentImageIndex].title
+                : ''}
             </strong>
           </div>
 

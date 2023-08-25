@@ -29,8 +29,9 @@ const handleResponse = async <T>(response: Response) => {
 export async function getCharacters(
   offset: number,
   limit: number,
+  orderBy: string,
 ): Promise<CharacterDataWrapper> {
-  const url = `${API_BASE_URL}/characters?offset=${offset}&limit=${limit}&${query}`
+  const url = `${API_BASE_URL}/characters?orderBy=${orderBy}&offset=${offset}&limit=${limit}&${query}`
   const response = await fetch(url)
   return handleResponse<CharacterDataWrapper>(response)
 }

@@ -4,6 +4,8 @@ import type { AppProps } from 'next/app'
 
 import '@/styles/globals.css'
 
+import { ToastProvider } from '@/contexts/ToastContext'
+
 const changaOne = Changa_One({
   subsets: ['latin'],
   weight: '400',
@@ -26,7 +28,9 @@ export default function App({ Component, pageProps }: AppProps) {
     <main
       className={`${changaOne.variable} ${nunito.variable} ${libreBarCode.variable} font-sans`}
     >
-      <Component {...pageProps} />
+      <ToastProvider>
+        <Component {...pageProps} />
+      </ToastProvider>
     </main>
   )
 }

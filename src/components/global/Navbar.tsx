@@ -12,7 +12,7 @@ export function Navbar() {
         <Image src={logo} alt="Marvel logo." className="w-14" />
       </div>
       <div className="flex h-full w-full flex-col justify-center gap-8 bg-zinc-900">
-        <ActiveLink
+        {/* <ActiveLink
           icon={<Buildings size={24} className="text-white" />}
           link="/accommodations"
           active
@@ -31,7 +31,7 @@ export function Navbar() {
         <ActiveLink
           icon={<User size={24} className="text-white" />}
           link="/profile"
-        />
+        /> */}
       </div>
     </div>
   )

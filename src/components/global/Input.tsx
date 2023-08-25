@@ -6,6 +6,7 @@ import {
 } from 'react'
 import { FieldError } from 'react-hook-form'
 import { HoverCard } from './HoverCard'
+import { X } from 'lucide-react'
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string
@@ -15,6 +16,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   info?: boolean
   disabled?: boolean
   isInvalid?: boolean
+  onClear?: () => void
 }
 
 const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
@@ -26,6 +28,7 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
     info = false,
     disabled = false,
     isInvalid = false,
+    onClear,
     ...rest
   },
   ref,
@@ -42,7 +45,7 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
 
       <div
         className={clsx(
-          'flex items-center rounded border-2 border-transparent bg-zinc-900 px-4 py-3 focus-within:border-red-600',
+          'flex items-center rounded border border-transparent border-zinc-700 bg-zinc-900 px-4 py-3 focus-within:border-red-600',
           {
             'focus-within:border-red-500': error?.message || isInvalid,
           },
@@ -56,6 +59,14 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
           {...rest}
           disabled={!!disabled}
         />
+        {onClear && (
+          <button
+            onClick={onClear}
+            className="text-zinc-400 transition-colors hover:text-zinc-200"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
 
         {info && <HoverCard message={message} error={error?.message} />}
       </div>

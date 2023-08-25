@@ -95,11 +95,20 @@ export default function CharacterDetail() {
                 </span>
               </div>
 
-              <Carousel
-                data={characterDetails.results[0].comics}
-                autoSlide={false}
-                autoSlideInterval={3000}
-              />
+              {characterDetails.results[0].comics.length === 0 ? (
+                <div className="flex h-full w-[672px] flex-col items-center justify-center gap-4 rounded border border-dashed border-zinc-700 bg-zinc-900 p-8">
+                  <strong className="text-xl uppercase">Sorry,</strong>
+                  <span>
+                    this character has no recorded comic book appearances.
+                  </span>
+                </div>
+              ) : (
+                <Carousel
+                  data={characterDetails.results[0].comics}
+                  autoSlide={false}
+                  autoSlideInterval={3000}
+                />
+              )}
             </>
           )}
         </div>

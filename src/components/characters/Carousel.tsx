@@ -3,7 +3,6 @@ import { CaretLeft, CaretRight } from 'phosphor-react'
 import { Comic } from '@/types/marvel'
 import Image from 'next/image'
 import next from 'next'
-import { Box } from '../global/Box'
 
 interface SlideProps {
   data: Comic[]

@@ -60,8 +60,6 @@ export async function detailCharacter(
     })),
   }
 
-  console.log(characterWithComics)
-
   return characterWithComics
 }
 

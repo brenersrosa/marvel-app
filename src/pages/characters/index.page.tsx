@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 import { Header } from '@/components/global/Header'
@@ -8,42 +9,35 @@ import { Card } from '@/components/characters/Card'
 import { getCharacters } from '@/utils/marvel'
 
 import { Character, CharacterDataWrapper } from '@/types/marvel'
+import { GetServerSideProps } from 'next'
 
-export default function Characters() {
+interface CharactersPageProps {
+  charactersData: CharacterDataWrapper
+}
+
+export default function Characters({ charactersData }: CharactersPageProps) {
+  const router = useRouter()
+
+  const { query } = router
+  const currentPage = parseInt(query.page as string, 10) || 1
+
   const [characters, setCharacters] = useState<Character[]>([])
-  const [offset, setOffset] = useState(0)
-  const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const charactersData: CharacterDataWrapper = await getCharacters(
-          offset,
-          20,
-        )
-        setCharacters(charactersData.results)
-
-        setTotalPages(Math.ceil(charactersData.total / 20))
-      } catch (error) {
-        console.error('Error fetching characters:', error)
-      }
-    }
-
-    fetchData()
-  }, [offset])
+    setCharacters(charactersData.results)
+    setTotalPages(Math.ceil(charactersData.total / 20))
+  }, [charactersData])
 
   function handleNextPage() {
     if (currentPage < totalPages) {
-      setOffset(offset + 20)
-      setCurrentPage(currentPage + 1)
+      router.push({ query: { page: (currentPage + 1).toString() } })
     }
   }
 
   function handlePreviousPage() {
     if (currentPage > 1) {
-      setOffset(offset - 20)
-      setCurrentPage(currentPage - 1)
+      router.push({ query: { page: (currentPage - 1).toString() } })
     }
   }
 
@@ -90,4 +84,29 @@ export default function Characters() {
       </div>
     </div>
   )
+}
+
+export const getServerSideProps: GetServerSideProps<
+  CharactersPageProps
+> = async (context) => {
+  const { query } = context
+  const currentPage = parseInt(query.page as string, 10) || 1
+  const offset = (currentPage - 1) * 20
+
+  try {
+    const charactersData: CharacterDataWrapper = await getCharacters(offset, 20)
+
+    return {
+      props: {
+        charactersData,
+      },
+    }
+  } catch (error) {
+    console.error('Error fetching characters:', error)
+    return {
+      props: {
+        charactersData: { total: 0, results: [] },
+      },
+    }
+  }
 }

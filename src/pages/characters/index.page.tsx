@@ -1,5 +1,5 @@
-import { GetServerSideProps } from 'next'
 import { useState, useEffect } from 'react'
+import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
 
@@ -9,14 +9,15 @@ import { Card } from '@/components/characters/Card'
 import { Input } from '@/components/global/Input'
 import { Button } from '@/components/global/Button'
 import { Box } from '@/components/global/Box'
+import { Loading } from '@/components/global/Loading'
+import { OrderBy } from '@/components/characters/OrderBy'
+import { AlphabetRuler } from '@/components/characters/AlphabetRuler'
 
 import { getCharacters, searchCharacters } from '@/utils/marvel'
 
 import { Character, CharacterDataWrapper } from '@/types/marvel'
 
 import { useToast } from '@/contexts/ToastContext'
-import { Loading } from '@/components/global/Loading'
-import { OrderBy } from '@/components/characters/OrderBy'
 
 interface CharactersPageProps {
   charactersData: CharacterDataWrapper
@@ -36,6 +37,8 @@ export default function Characters({ charactersData }: CharactersPageProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [searchResults, setSearchResults] = useState<Character[]>([])
 
+  const [orderBy, setOrderBy] = useState<'name' | '-name'>('name')
+
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
@@ -44,21 +47,41 @@ export default function Characters({ charactersData }: CharactersPageProps) {
   }, [charactersData])
 
   function handleNextPage() {
-    if (currentPage < totalPages) {
-      router.push({ query: { page: (currentPage + 1).toString() } })
+    const nextPage = currentPage + 1
+
+    if (nextPage <= totalPages) {
+      router.push({
+        query: {
+          page: nextPage.toString(),
+          letter: query.letter,
+        },
+      })
     }
   }
 
   function handlePreviousPage() {
-    if (currentPage > 1) {
-      router.push({ query: { page: (currentPage - 1).toString() } })
+    const prevPage = currentPage - 1
+
+    if (prevPage >= 1) {
+      router.push({
+        query: {
+          page: prevPage.toString(),
+          letter: query.letter,
+        },
+      })
     }
   }
 
   async function handleSearch() {
     try {
-      setIsLoading(true)
-      const charactersData = await searchCharacters(searchTerm)
+      const currentPage = parseInt(query.page as string, 10) || 1
+      const offset = (currentPage - 1) * 20
+      const charactersData = await searchCharacters(
+        searchTerm,
+        offset,
+        20,
+        orderBy,
+      )
       setSearchResults(charactersData.results)
 
       if (charactersData.results.length === 0) {
@@ -75,13 +98,27 @@ export default function Characters({ charactersData }: CharactersPageProps) {
   async function handleSortChange(value: string) {
     try {
       setIsLoading(true)
-      const newCharactersData = await getCharacters(
-        (currentPage - 1) * 20,
-        20,
-        value,
-      )
-      setCharacters(newCharactersData.results)
-      setTotalPages(Math.ceil(newCharactersData.total / 20))
+      const currentPage = parseInt(query.page as string, 10) || 1
+      const offset = (currentPage - 1) * 20
+
+      let charactersData
+
+      if (Array.isArray(query.letter)) {
+        charactersData = await searchCharacters(
+          query.letter[0],
+          offset,
+          20,
+          value,
+        )
+      } else if (query.letter && query.letter !== 'all') {
+        charactersData = await searchCharacters(query.letter, offset, 20, value)
+      } else {
+        charactersData = await getCharacters(offset, 20, value)
+      }
+
+      setCharacters(charactersData.results)
+      setTotalPages(Math.ceil(charactersData.total / 20))
+      setOrderBy(value as 'name' | '-name')
     } catch (error) {
       console.error('Error fetching characters:', error)
       setCharacters([])
@@ -94,10 +131,21 @@ export default function Characters({ charactersData }: CharactersPageProps) {
   async function clearSearchInput() {
     try {
       setSearchTerm('')
-      setIsLoading(true)
       const charactersData = await getCharacters(1, 20, 'name')
       setSearchResults([])
       setCharacters(charactersData.results)
+    } catch (error) {
+      console.error('Error searching characters:', error)
+      setSearchResults([])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  async function handleLetterSelected(letter: string) {
+    try {
+      setOrderBy(orderBy === 'name' ? '-name' : 'name')
+      router.push({ query: { page: 1, letter, orderBy } })
     } catch (error) {
       console.error('Error searching characters:', error)
       setSearchResults([])
@@ -127,18 +175,22 @@ export default function Characters({ charactersData }: CharactersPageProps) {
                 placeholder="Search character by name"
                 onClear={clearSearchInput}
               />
-              <Button icon={<Search />} onClick={handleSearch} type="submit" />
+              <Button icon={<Search />} onClick={handleSearch} />
             </div>
 
-            <OrderBy onSortChange={handleSortChange} />
+            <OrderBy onSortChange={handleSortChange} orderBy={orderBy} />
           </Box>
+
+          <div className="w-full">
+            <AlphabetRuler onClick={(letter) => handleLetterSelected(letter)} />
+          </div>
 
           {isLoading ? (
             <div className="flex h-full w-full items-center justify-center">
               <Loading />
             </div>
           ) : (
-            <div className="grid grid-cols-4 gap-8">
+            <div className="grid grid-cols-4 gap-8 py-8">
               {searchResults.length > 0
                 ? searchResults.map((character) => (
                     <Card key={character.id} character={character} />
@@ -149,7 +201,7 @@ export default function Characters({ charactersData }: CharactersPageProps) {
             </div>
           )}
 
-          {searchResults.length === 0 && !isLoading && (
+          {!isLoading && (
             <div className="mt-6 flex items-center justify-center gap-4">
               <button
                 onClick={handlePreviousPage}
@@ -178,19 +230,25 @@ export default function Characters({ charactersData }: CharactersPageProps) {
   )
 }
 
-export const getServerSideProps: GetServerSideProps<
-  CharactersPageProps
-> = async (context) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   const { query } = context
   const currentPage = parseInt(query.page as string, 10) || 1
   const offset = (currentPage - 1) * 20
 
   try {
-    const charactersData: CharacterDataWrapper = await getCharacters(
-      offset,
-      20,
-      'name',
-    )
+    let charactersData
+
+    const letter = query.letter as string
+
+    if (letter && letter !== 'all' && letter !== '0-9') {
+      charactersData = await searchCharacters(letter, offset, 20, 'name')
+    } else if (letter === 'all') {
+      charactersData = await getCharacters(offset, 20, 'name')
+    } else if (letter === '0-9') {
+      charactersData = await searchCharacters('3', offset, 20, 'name')
+    } else {
+      charactersData = await getCharacters(offset, 20, 'name')
+    }
 
     return {
       props: {
@@ -201,7 +259,7 @@ export const getServerSideProps: GetServerSideProps<
     console.error('Error fetching characters:', error)
     return {
       props: {
-        charactersData: { total: 0, results: [] },
+        charactersData: { total: 0, results: [] } as CharacterDataWrapper,
       },
     }
   }

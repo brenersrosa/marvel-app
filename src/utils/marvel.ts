@@ -65,9 +65,12 @@ export async function detailCharacter(
 }
 
 export async function searchCharacters(
-  querySearch: string | null,
+  querySearch: string | number | null,
+  offset: number,
+  limit: number,
+  orderBy: string,
 ): Promise<CharacterDataWrapper> {
-  const url = `${API_BASE_URL}/characters?nameStartsWith=${querySearch}&limit=99&${query}`
+  const url = `${API_BASE_URL}/characters?nameStartsWith=${querySearch}&orderBy=${orderBy}&offset=${offset}&limit=${limit}&${query}`
   const response = await fetch(url)
   return handleResponse<CharacterDataWrapper>(response)
 }

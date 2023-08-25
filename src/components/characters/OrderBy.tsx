@@ -4,16 +4,17 @@ import { useState } from 'react'
 interface OrderByProps {
   onChange?: (value: 'ascending' | 'descending') => void
   onSortChange: (value: string) => void
+  orderBy: 'name' | '-name'
 }
 
-export function OrderBy({ onChange, onSortChange }: OrderByProps) {
-  const [orderBy, setOrderBy] = useState<'ascending' | 'descending'>(
-    'ascending',
+export function OrderBy({ onChange, onSortChange, orderBy }: OrderByProps) {
+  const [sortingOrder, setSortingOrder] = useState<'ascending' | 'descending'>(
+    orderBy === 'name' ? 'ascending' : 'descending',
   )
 
   function handleValueChange() {
-    const newValue = orderBy === 'ascending' ? 'descending' : 'ascending'
-    setOrderBy(newValue)
+    const newValue = sortingOrder === 'ascending' ? 'descending' : 'ascending'
+    setSortingOrder(newValue)
     if (onChange) {
       onChange(newValue)
     }
@@ -25,7 +26,7 @@ export function OrderBy({ onChange, onSortChange }: OrderByProps) {
   return (
     <button className="flex items-center gap-2" onClick={handleValueChange}>
       <span>Order by:</span>
-      {orderBy === 'ascending' ? (
+      {sortingOrder === 'ascending' ? (
         <>
           <ArrowUp />A - Z
         </>

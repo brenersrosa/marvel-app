@@ -1,17 +1,22 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
 import { CaretLeft, SignOut } from 'phosphor-react'
-
-import { Button } from './Button'
+import Image from 'next/image'
+import { AuthContext } from '@/contexts/AuthContext'
 
 interface FormHeaderProps {
   title: string
 }
 
 export function Header({ title }: FormHeaderProps) {
-  const [isButtonEnabled, setIsButtonEnabled] = useState(false)
+  const session = useSession()
 
   const router = useRouter()
+
+  const { user, handleSignOut } = useContext(AuthContext)
+
+  const [isButtonEnabled, setIsButtonEnabled] = useState(false)
 
   useEffect(() => {
     const currentPath = window.location.pathname
@@ -23,14 +28,6 @@ export function Header({ title }: FormHeaderProps) {
       setIsButtonEnabled(false)
     }
   }, [])
-
-  function handleSignOut() {
-    // signOut()
-  }
-
-  const user = {
-    name: 'Brener Rosa',
-  }
 
   return (
     <div className="flex h-20 w-full items-center justify-between bg-zinc-900 px-20">
@@ -44,11 +41,20 @@ export function Header({ title }: FormHeaderProps) {
           </button>
         )}
         <span className="font-title text-xl font-semibold">{title}</span>
-        {!user ? (
+        {!session.data ? (
           <span className="font-medium">Entrar</span>
         ) : (
           <div className="flex items-center gap-4">
-            <span className="font-medium">{user.name}</span>
+            <div className="flex items-center justify-center gap-2">
+              <span className="font-medium">{session.data?.user?.name}</span>
+              <Image
+                src={user?.avatarUrl || ''}
+                alt={user?.name || 'Profile image.'}
+                width={40}
+                height={40}
+                className="h-10 w-10 rounded-full"
+              />
+            </div>
             <button onClick={handleSignOut}>
               <SignOut size={24} />
             </button>

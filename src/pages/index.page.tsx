@@ -1,12 +1,15 @@
+import { useContext } from 'react'
 import Image from 'next/image'
 import { GoogleLogo } from 'phosphor-react'
 
-import { ClaimUsernameForm } from '@/components/home/ClaimUsernameForm'
+import { AuthContext } from '@/contexts/AuthContext'
 
 import heroImage from '@/assets/hero-iron-man.png'
 import marvelLogo from '@/assets/marvel-logo.svg'
 
 export default function Home() {
+  const { handleSignIn } = useContext(AuthContext)
+
   return (
     <div className="h-screen w-screen bg-home bg-cover bg-no-repeat">
       <div className="w-full px-8 md:mx-auto md:flex md:h-full md:w-full md:max-w-7xl md:items-center md:gap-20 md:px-0">
@@ -22,16 +25,8 @@ export default function Home() {
             quadrinhos, filmes e séries.
           </span>
 
-          <ClaimUsernameForm />
-
-          <div className="flex items-center justify-between gap-4">
-            <div className="h-[1px] w-full rounded-full bg-zinc-600"></div>
-            <span className="text-sm text-zinc-400">ou</span>
-            <div className="h-[1px] w-full rounded-full bg-zinc-600"></div>
-          </div>
-
           <button
-            onClick={() => ({})}
+            onClick={handleSignIn}
             className="flex items-center justify-center gap-2 rounded bg-red-600 px-8 py-3 font-medium transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-zinc-500"
           >
             <GoogleLogo className="h-6 w-6" />

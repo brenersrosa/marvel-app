@@ -1,10 +1,12 @@
 import { Changa_One, Nunito, Libre_Barcode_128 } from 'next/font/google'
+import { SessionProvider } from 'next-auth/react'
 
 import type { AppProps } from 'next/app'
 
 import '@/styles/globals.css'
 
 import { ToastProvider } from '@/contexts/ToastContext'
+import { AuthProvider } from '@/contexts/AuthContext'
 
 const changaOne = Changa_One({
   subsets: ['latin'],
@@ -23,14 +25,21 @@ const libreBarCode = Libre_Barcode_128({
   variable: '--font-libre-bar-code',
 })
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps) {
   return (
-    <main
-      className={`${changaOne.variable} ${nunito.variable} ${libreBarCode.variable} font-sans`}
-    >
-      <ToastProvider>
-        <Component {...pageProps} />
-      </ToastProvider>
-    </main>
+    <SessionProvider session={session}>
+      <AuthProvider>
+        <ToastProvider>
+          <main
+            className={`${changaOne.variable} ${nunito.variable} ${libreBarCode.variable} font-sans`}
+          >
+            <Component {...pageProps} />
+          </main>
+        </ToastProvider>
+      </AuthProvider>
+    </SessionProvider>
   )
 }

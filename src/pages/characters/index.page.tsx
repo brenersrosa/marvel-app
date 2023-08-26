@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
@@ -18,12 +18,21 @@ import { getCharacters, searchCharacters } from '@/utils/marvel'
 import { Character, CharacterDataWrapper } from '@/types/marvel'
 
 import { useToast } from '@/contexts/ToastContext'
+import { api } from '@/lib/axios'
+import { AuthContext } from '@/contexts/AuthContext'
+import { Switch } from '@/components/global/Switch'
 
 interface CharactersPageProps {
   charactersData: CharacterDataWrapper
 }
 
+interface favoriteCharacterProps {
+  character_id: string
+}
+
 export default function Characters({ charactersData }: CharactersPageProps) {
+  const { user } = useContext(AuthContext)
+
   const router = useRouter()
 
   const { showToast } = useToast()
@@ -37,14 +46,36 @@ export default function Characters({ charactersData }: CharactersPageProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [searchResults, setSearchResults] = useState<Character[]>([])
 
+  const [isActive, setIsActive] = useState<'active' | 'inactive'>('inactive')
   const [orderBy, setOrderBy] = useState<'name' | '-name'>('name')
 
   const [isLoading, setIsLoading] = useState(false)
+
+  const [favoriteCharacters, setFavoriteCharacters] = useState<
+    favoriteCharacterProps[]
+  >([])
 
   useEffect(() => {
     setCharacters(charactersData.results)
     setTotalPages(Math.ceil(charactersData.total / 20))
   }, [charactersData])
+
+  useEffect(() => {
+    async function fetchFavoriteCharacters() {
+      try {
+        const response = await api.get(
+          `/characters/get-favorite-characters?userId=${user?.id}`,
+        )
+        setFavoriteCharacters(response.data)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    if (user) {
+      fetchFavoriteCharacters()
+    }
+  }, [user, favoriteCharacters])
 
   function handleNextPage() {
     const nextPage = currentPage + 1
@@ -155,7 +186,7 @@ export default function Characters({ charactersData }: CharactersPageProps) {
   }
 
   return (
-    <div className="grid-cols-dashboard grid-rows-dashboard grid h-screen bg-zinc-600">
+    <div className="grid h-screen grid-cols-dashboard grid-rows-dashboard bg-zinc-600">
       <div className="row-span-3">
         <Navbar />
       </div>
@@ -178,6 +209,8 @@ export default function Characters({ charactersData }: CharactersPageProps) {
               <Button icon={<Search />} onClick={handleSearch} />
             </div>
 
+            <Switch isActive={isActive} onIsActiveChange={setIsActive} />
+
             <OrderBy onSortChange={handleSortChange} orderBy={orderBy} />
           </Box>
 
@@ -185,23 +218,76 @@ export default function Characters({ charactersData }: CharactersPageProps) {
             <AlphabetRuler onClick={(letter) => handleLetterSelected(letter)} />
           </div>
 
+          <div className="w-full items-center justify-end"></div>
           {isLoading ? (
             <div className="flex h-full w-full items-center justify-center">
               <Loading />
             </div>
+          ) : isActive === 'active' ? (
+            <div className="grid grid-cols-4 gap-8 py-8">
+              {searchResults.length > 0
+                ? searchResults.map((character) => {
+                    const isCharacterFavorite = favoriteCharacters.some(
+                      (fav) => fav.character_id === String(character.id),
+                    )
+                    if (isCharacterFavorite) {
+                      return (
+                        <Card
+                          key={character.id}
+                          character={character}
+                          isFavorite={isCharacterFavorite}
+                        />
+                      )
+                    }
+                    return null
+                  })
+                : characters.map((character) => {
+                    const isCharacterFavorite = favoriteCharacters.some(
+                      (fav) => fav.character_id === String(character.id),
+                    )
+                    if (isCharacterFavorite) {
+                      return (
+                        <Card
+                          key={character.id}
+                          character={character}
+                          isFavorite={isCharacterFavorite}
+                        />
+                      )
+                    }
+                    return null
+                  })}
+            </div>
           ) : (
             <div className="grid grid-cols-4 gap-8 py-8">
               {searchResults.length > 0
-                ? searchResults.map((character) => (
-                    <Card key={character.id} character={character} />
-                  ))
-                : characters.map((character) => (
-                    <Card key={character.id} character={character} />
-                  ))}
+                ? searchResults.map((character) => {
+                    const isCharacterFavorite = favoriteCharacters.some(
+                      (fav) => fav.character_id === String(character.id),
+                    )
+                    return (
+                      <Card
+                        key={character.id}
+                        character={character}
+                        isFavorite={isCharacterFavorite}
+                      />
+                    )
+                  })
+                : characters.map((character) => {
+                    const isCharacterFavorite = favoriteCharacters.some(
+                      (fav) => fav.character_id === String(character.id),
+                    )
+                    return (
+                      <Card
+                        key={character.id}
+                        character={character}
+                        isFavorite={isCharacterFavorite}
+                      />
+                    )
+                  })}
             </div>
           )}
 
-          {!isLoading && (
+          {!isLoading && isActive === 'inactive' && (
             <div className="mt-6 flex items-center justify-center gap-4">
               <button
                 onClick={handlePreviousPage}

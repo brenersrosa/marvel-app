@@ -1,38 +1,106 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Marvel App
 
-## Getting Started
+## Description
 
-First, run the development server:
+This project has the premise of presenting the application created for the front-end selection process, where the challenge is to create a responsive web application that will consume the Marvel API to retrieve information related to its characters.
 
-```bash
+## Screenshots
+
+### Home
+![alt text](https://raw.githubusercontent.com/brenersrosa/marvel-app/main/public/images/home.png)
+
+### Characters list
+![alt text](https://raw.githubusercontent.com/brenersrosa/marvel-app/main/public/images/characters.png)
+
+### Character details
+![alt text](https://raw.githubusercontent.com/brenersrosa/marvel-app/main/public/images/character-details.png)
+
+## Requirements
+
+Before starting the installation and setup of the project, make sure your system meets the following requirements:
+
+Node.js (version 18.16.0 or higher)
+NPM (Node Package Manager) or Yarn
+
+## Installation
+
+Follow the steps below to install and set up the project on your local machine:
+
+1. **Clone the repository**:
+
+   ```shell
+   git clone https://github.com/brenersrosa/marvel-app.git
+   ```
+
+2. **Navigate to the project directory**:
+
+   ```shell
+   cd marvel-app
+   ```
+
+3. **Install the dependencies**:
+
+   ```shell
+   npm install
+   ```
+
+   or, if you're using Yarn:
+
+   ```shell
+   yarn install
+   ```
+
+4. **Create a configuration file**:
+    
+    In the project's root directory, create a file named .env following the .env.example template and set the necessary environment variables for the project. For example:
+    
+    ```
+    DATABASE_URL="mysql://USER:PASSWORD@HOST:PORT/<DATABASE_NAME>"
+    
+    NEXT_PUBLIC_API_BASE_URL=""
+    NEXT_PUBLIC_API_PUBLIC_KEY=""
+    NEXT_PUBLIC_API_PRIVATE_KEY=""
+
+    GOOGLE_CLIENT_ID=""
+    GOOGLE_CLIENT_SECRET=""
+    NEXTAUTH_SECRET=""
+    ```
+    
+
+5. **Create a database with Prisma**:
+
+    After configuring the .env, you need to create the database using the following command:
+
+    ```bash
+    npx prisma migrate dev
+    ```
+    
+    This command will create the database.
+
+6. **View the database using Prisma**:
+
+    After creating the database, you can view the data and tables using the following command:
+
+    ```bash
+    npx prisma studio
+    ```
+
+## Execução
+
+After installing and configuring the project, you can run it using the following command:
+
+```shell
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+or, if you're using Yarn:
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+```shell
+yarn dev
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+This will start the server, and the project will be accessible in your browser at the address http://localhost:3000.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## Licença
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This project is licensed under the **[MIT License](https://opensource.org/license/mit/).**

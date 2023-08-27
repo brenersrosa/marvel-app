@@ -36,9 +36,9 @@ export function PrismaAdapter(): Adapter {
       return {
         id: user.id,
         name: user.name,
-        email: user.email || '', // Ensure non-nullable email
+        email: user.email || '',
         emailVerified: null,
-        avatar_url: user.avatar_url || '', // Ensure non-nullable avatar_url
+        avatar_url: user.avatar_url || '',
       }
     },
 

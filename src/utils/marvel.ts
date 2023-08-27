@@ -1,10 +1,6 @@
 import md5 from 'md5'
 
-import {
-  CharacterDataWrapper,
-  ComicDataWrapper,
-  SerieDataWrapper,
-} from '@/types/marvel'
+import { CharacterDataWrapper, ComicDataWrapper } from '@/types/marvel'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 const API_PUBLIC_KEY = process.env.NEXT_PUBLIC_API_PUBLIC_KEY
@@ -41,23 +37,21 @@ export async function detailCharacter(
 ): Promise<CharacterDataWrapper> {
   const characterUrl = `${API_BASE_URL}/characters/${characterId}?${query}`
   const comicsUrl = `${API_BASE_URL}/characters/${characterId}/comics?${query}`
-  const seriesUrl = `${API_BASE_URL}/characters/${characterId}/series?${query}`
 
-  const [characterResponse, comicsResponse, seriesResponse] = await Promise.all(
-    [fetch(characterUrl), fetch(comicsUrl), fetch(seriesUrl)],
-  )
+  const [characterResponse, comicsResponse] = await Promise.all([
+    fetch(characterUrl),
+    fetch(comicsUrl),
+  ])
 
   const characterData =
     await handleResponse<CharacterDataWrapper>(characterResponse)
   const comicsData = await handleResponse<ComicDataWrapper>(comicsResponse)
-  const seriesData = await handleResponse<SerieDataWrapper>(seriesResponse)
 
   const characterWithComics = {
     ...characterData,
     results: characterData.results.map((character) => ({
       ...character,
       comics: comicsData.results,
-      series: seriesData.results,
     })),
   }
 

@@ -44,7 +44,7 @@ export default function CharacterDetail() {
     <>
       <NextSeo title="Character details | Marvel App" />
 
-      <div className="flex h-screen w-full flex-col bg-zinc-600">
+      <div className="flex h-full w-full flex-col bg-zinc-600 lg:h-screen">
         <div className="w-full">
           <Header
             title={

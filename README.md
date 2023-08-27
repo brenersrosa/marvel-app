@@ -7,13 +7,13 @@ This project has the premise of presenting the application created for the front
 ## Screenshots
 
 ### Home
-![alt text](https://raw.githubusercontent.com/brenersrosa/marvel-app/main/public/screenshots/home.png)
+![alt text](https://github.com/brenersrosa/marvel-app/blob/main/public/screenshots/home.png)
 
 ### Characters list
-![alt text](https://raw.githubusercontent.com/brenersrosa/marvel-app/main/public/screenshots/characters.png)
+![alt text](https://github.com/brenersrosa/marvel-app/blob/main/public/screenshots/characters.png)
 
 ### Character details
-![alt text](https://raw.githubusercontent.com/brenersrosa/marvel-app/main/public/screenshots/character-details.png)
+![alt text](https://github.com/brenersrosa/marvel-app/blob/main/public/screenshots/character-details.png)
 
 ## Requirements
 

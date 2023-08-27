@@ -9,8 +9,8 @@ export function buildNextAuthOptions(): NextAuthOptions {
     adapter: PrismaAdapter(),
     providers: [
       GoogleProvider({
-        clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string,
-        clientSecret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET as string,
+        clientId: process.env.GOOGLE_CLIENT_ID as string,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
         authorization: {
           params: {
             prompt: 'consent',
@@ -29,12 +29,9 @@ export function buildNextAuthOptions(): NextAuthOptions {
       }),
     ],
     jwt: {
-      secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+      secret: process.env.NEXTAUTH_SECRET,
     },
     callbacks: {
-      async signIn() {
-        return true
-      },
       async session({ session, user }) {
         return {
           ...session,

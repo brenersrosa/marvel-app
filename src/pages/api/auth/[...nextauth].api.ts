@@ -32,6 +32,9 @@ export function buildNextAuthOptions(): NextAuthOptions {
       secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
     },
     callbacks: {
+      async signIn() {
+        return true
+      },
       async session({ session, user }) {
         return {
           ...session,

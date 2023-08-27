@@ -8,7 +8,7 @@ export function AlphabetRuler({ onClick }: AlphabetRulerProps) {
   )
 
   return (
-    <div className="flex items-center justify-between gap-2">
+    <div className="no-scrollbar flex items-center justify-between gap-2 overflow-x-scroll">
       <button
         className="flex items-center justify-center rounded bg-zinc-700 p-2 hover:bg-zinc-600"
         onClick={() => onClick('all')}
@@ -16,7 +16,7 @@ export function AlphabetRuler({ onClick }: AlphabetRulerProps) {
         ALL
       </button>
       <button
-        className="flex w-10 items-center justify-center rounded bg-zinc-700 p-2 hover:bg-zinc-600"
+        className="flex w-10 items-center justify-center rounded bg-zinc-700 px-4 py-2 hover:bg-zinc-600"
         onClick={() => onClick('0-9')}
       >
         #
@@ -24,7 +24,7 @@ export function AlphabetRuler({ onClick }: AlphabetRulerProps) {
       {alphabet.map((letter) => (
         <button
           key={letter}
-          className="flex w-10 items-center justify-center rounded bg-zinc-700 p-2 hover:bg-zinc-600"
+          className="flex w-10 items-center justify-center rounded bg-zinc-700 px-4 py-2 hover:bg-zinc-600"
           onClick={() => onClick(letter)}
         >
           {letter}

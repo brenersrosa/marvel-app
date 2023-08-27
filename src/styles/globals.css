@@ -18,3 +18,16 @@ html {
 body {
   @apply text-zinc-50 bg-zinc-950
 }
+
+@layer utilities {
+    @variants responsive {
+      .no-scrollbar::-webkit-scrollbar {
+          display: none;
+      }
+
+      .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+      }
+    }
+  }

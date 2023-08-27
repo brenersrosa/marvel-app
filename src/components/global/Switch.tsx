@@ -22,7 +22,7 @@ const SwitchBase: ForwardRefRenderFunction<HTMLInputElement, SwitchProps> = (
   return (
     <div className="flex items-center gap-4">
       <label className="text-zinc-200" htmlFor="status-mode">
-        Apenas favoritos
+        Only favorites
       </label>
       <SwitchRadix.Root
         className="flex h-6 w-12 items-center rounded-full border border-zinc-700 bg-zinc-900"

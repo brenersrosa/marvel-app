@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextAuth, { NextAuthOptions } from 'next-auth'
 import GoogleProvider, { GoogleProfile } from 'next-auth/providers/google'
+
 import { PrismaAdapter } from '../../../lib/auth/prisma-adapter'
 
 export function buildNextAuthOptions(): NextAuthOptions {
@@ -20,15 +21,25 @@ export function buildNextAuthOptions(): NextAuthOptions {
         },
       }),
     ],
+    jwt: {
+      secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
+    },
+    pages: {
+      signIn: '/',
+    },
     callbacks: {
-      async signIn({ account }) {
-        if (!account) {
-          return '/register'
-        }
+      // async signIn({ user }) {
+      //   console.log(user)
 
-        return true
-      },
+      //   if (user) {
+      //     return Promise.resolve('/characters')
+      //   }
+
+      //   return Promise.resolve('/')
+      // },
       async session({ session, user }) {
+        console.log(session)
+
         return {
           ...session,
           user,

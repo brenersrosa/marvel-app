@@ -6,7 +6,6 @@ import type { AppProps } from 'next/app'
 import '@/styles/globals.css'
 
 import { ToastProvider } from '@/contexts/ToastContext'
-import { AuthProvider } from '@/contexts/AuthContext'
 
 const changaOne = Changa_One({
   subsets: ['latin'],
@@ -31,15 +30,13 @@ export default function App({
 }: AppProps) {
   return (
     <SessionProvider session={session}>
-      <AuthProvider>
-        <ToastProvider>
-          <main
-            className={`${changaOne.variable} ${nunito.variable} ${libreBarCode.variable} font-sans`}
-          >
-            <Component {...pageProps} />
-          </main>
-        </ToastProvider>
-      </AuthProvider>
+      <ToastProvider>
+        <main
+          className={`${changaOne.variable} ${nunito.variable} ${libreBarCode.variable} font-sans`}
+        >
+          <Component {...pageProps} />
+        </main>
+      </ToastProvider>
     </SessionProvider>
   )
 }

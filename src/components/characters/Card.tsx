@@ -1,9 +1,8 @@
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Heart } from 'lucide-react'
-
-import { AuthContext } from '@/contexts/AuthContext'
+import { useSession } from 'next-auth/react'
+import { Heart, Plus } from 'lucide-react'
 
 import { api } from '@/lib/axios'
 
@@ -18,7 +17,7 @@ interface CharacterCardProps {
 export function Card({ character, isFavorite }: CharacterCardProps) {
   const [isProcessing, setIsProcessing] = useState(false)
 
-  const { user } = useContext(AuthContext)
+  const session = useSession()
 
   async function handleFavoriteToggle() {
     if (isProcessing) {
@@ -29,7 +28,7 @@ export function Card({ character, isFavorite }: CharacterCardProps) {
 
     try {
       await api.post('/characters/favorite', {
-        userId: user?.id,
+        userId: session.data?.user.id,
         characterId: String(character.id),
       })
     } catch (error) {
@@ -71,14 +70,21 @@ export function Card({ character, isFavorite }: CharacterCardProps) {
         <h3 className="line-clamp-1 max-w-xs font-title text-xl font-bold leading-relaxed text-zinc-100">
           {character.name}
         </h3>
+
         <p className="line-clamp-2 max-w-xs leading-relaxed text-zinc-200">
           {character.description === ''
             ? 'Insufficient information found for this character.'
             : character.description}
         </p>
-      </div>
 
-      <Link href={`/characters/details/${character.id}`}>View Details</Link>
+        <Link
+          href={`/characters/details/${character.id}`}
+          className="mt-2 flex w-full items-center justify-center gap-2 rounded bg-red-600 py-3 text-zinc-100 transition-colors hover:bg-red-700"
+        >
+          <Plus className="h-5 w-5" />
+          View details
+        </Link>
+      </div>
     </div>
   )
 }

@@ -1,17 +1,21 @@
 import { useEffect, useState } from 'react'
+import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
+import { getSession, useSession } from 'next-auth/react'
 
 import { CharacterDataWrapper } from '@/types/marvel'
 
 import { detailCharacter } from '@/utils/marvel'
 import { Carousel } from '@/components/characters/Carousel'
 import { Header } from '@/components/global/Header'
-import { Navbar } from '@/components/global/Navbar'
 import { Loading } from '@/components/global/Loading'
 
 export default function CharacterDetail() {
+  const session = useSession()
+
   const router = useRouter()
+
   const characterId = router.query.characterId as string
   const [characterDetails, setCharacterDetails] =
     useState<CharacterDataWrapper | null>(null)
@@ -36,23 +40,21 @@ export default function CharacterDetail() {
   }, [characterId])
 
   return (
-    <div className="grid-cols-dashboard grid-rows-dashboard grid h-screen bg-zinc-600">
-      <div className="row-span-3">
-        <Navbar />
-      </div>
-
-      <div className="col-span-2">
+    <div className="flex h-screen w-full flex-col bg-zinc-600">
+      <div className="w-full">
         <Header
           title={
             characterDetails
               ? characterDetails.results[0].name
               : 'Characters details'
           }
+          name={session.data?.user.name}
+          avatarUrl={session.data?.user.avatar_url}
         />
       </div>
 
-      <div className="col-span-2 col-start-2 row-span-2 row-start-2 overflow-y-scroll bg-home">
-        <div className="mx-auto flex h-full gap-8 p-12">
+      <div className="h-full w-full bg-home">
+        <div className="mx-auto flex h-full flex-col gap-8 px-4 py-8 md:p-12 lg:flex-row">
           {isLoading ? (
             <div className="flex h-full w-full items-center justify-center">
               <Loading />
@@ -126,4 +128,23 @@ export default function CharacterDetail() {
       </div>
     </div>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context)
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    }
+  }
+
+  return {
+    props: {
+      session,
+    },
+  }
 }

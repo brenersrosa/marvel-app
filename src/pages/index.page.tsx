@@ -1,22 +1,42 @@
-import { useContext } from 'react'
 import Image from 'next/image'
 import { GoogleLogo } from 'phosphor-react'
 
-import { AuthContext } from '@/contexts/AuthContext'
-
 import heroImage from '@/assets/hero-iron-man.png'
 import marvelLogo from '@/assets/marvel-logo.svg'
+import { getSession, signIn, useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
+import { GetServerSideProps } from 'next'
 
 export default function Home() {
-  const { handleSignIn } = useContext(AuthContext)
+  const router = useRouter()
+
+  const session = useSession()
+
+  useEffect(() => {
+    if (session.status === 'authenticated') {
+      router.push('/characters')
+    }
+  }, [session, router])
+
+  async function handleSignIn() {
+    await signIn('google')
+
+    // try {
+    //   await router.push('/characters')
+    //   console.log('ok')
+    // } catch (error) {
+    //   console.error('Error navigating:', error)
+    // }
+  }
 
   return (
     <div className="h-screen w-screen bg-home bg-cover bg-no-repeat">
-      <div className="w-full px-8 md:mx-auto md:flex md:h-full md:w-full md:max-w-7xl md:items-center md:gap-20 md:px-0">
-        <div className="flex max-w-2xl flex-1 flex-col gap-6">
+      <div className="flex h-full w-full flex-col items-center p-8 lg:mx-auto lg:flex lg:h-full lg:w-full lg:max-w-7xl lg:flex-row lg:items-center lg:gap-20 lg:px-0">
+        <div className="flex max-w-2xl flex-1 flex-col justify-center gap-6">
           <Image src={marvelLogo} height={48} alt="Marvel logo." />
 
-          <h1 className="font-title text-6xl leading-tight text-white">
+          <h1 className="font-title text-4xl leading-tight text-white lg:text-6xl">
             Seus personagens e criações favoritas
           </h1>
 
@@ -47,4 +67,23 @@ export default function Home() {
       </div>
     </div>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession(context)
+
+  if (session) {
+    return {
+      redirect: {
+        destination: '/characters',
+        permanent: false,
+      },
+    }
+  }
+
+  return {
+    props: {
+      session: null,
+    },
+  }
 }

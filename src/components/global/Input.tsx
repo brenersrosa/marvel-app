@@ -5,15 +5,12 @@ import {
   forwardRef,
 } from 'react'
 import { FieldError } from 'react-hook-form'
-import { HoverCard } from './HoverCard'
 import { X } from 'lucide-react'
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string
   prefix?: string
-  message?: string
   error?: FieldError
-  info?: boolean
   disabled?: boolean
   isInvalid?: boolean
   onClear?: () => void
@@ -23,9 +20,7 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
   {
     label,
     prefix,
-    message,
     error = null,
-    info = false,
     disabled = false,
     isInvalid = false,
     onClear,
@@ -67,8 +62,6 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
             <X className="h-4 w-4" />
           </button>
         )}
-
-        {info && <HoverCard message={message} error={error?.message} />}
       </div>
     </div>
   )

@@ -36,20 +36,20 @@ export function Carousel({
   }, [autoSlideInterval, autoSlide])
 
   return (
-    <div className="flex h-[525px] items-center">
+    <div className="flex h-full flex-col items-center lg:h-[525px] lg:flex-row">
       <div className="flex h-full items-center justify-center rounded-l border border-zinc-700">
-        <div className="relative w-[300px] overflow-hidden">
+        <div className="relative w-full overflow-hidden lg:w-[300px]">
           <div
             className="flex transition-transform duration-500 ease-out"
-            style={{ transform: `translateX(-${currentImageIndex * 300}px)` }}
+            style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
           >
             {data.map((comic) => (
               <Image
                 key={comic.id}
                 src={`${comic.thumbnail.path}.${comic.thumbnail.extension}`}
                 alt={comic.title}
-                width={300}
-                height={300}
+                width={900}
+                height={900}
               />
             ))}
           </div>
@@ -73,7 +73,7 @@ export function Carousel({
         </div>
       </div>
 
-      <div className="flex h-full w-[672px] flex-col gap-4 overflow-y-scroll rounded-r border border-zinc-700 bg-zinc-900 p-8">
+      <div className="flex h-full w-full flex-col gap-4 overflow-y-scroll rounded-r border border-zinc-700 bg-zinc-900 p-8 lg:w-[672px]">
         <h2 className="text-lg font-semibold text-zinc-100">Comic details:</h2>
 
         <div className="flex flex-col gap-4">

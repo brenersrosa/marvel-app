@@ -1,10 +1,10 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect } from 'react'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
+import { getSession, useSession } from 'next-auth/react'
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
 
 import { Header } from '@/components/global/Header'
-import { Navbar } from '@/components/global/Navbar'
 import { Card } from '@/components/characters/Card'
 import { Input } from '@/components/global/Input'
 import { Button } from '@/components/global/Button'
@@ -12,15 +12,15 @@ import { Box } from '@/components/global/Box'
 import { Loading } from '@/components/global/Loading'
 import { OrderBy } from '@/components/characters/OrderBy'
 import { AlphabetRuler } from '@/components/characters/AlphabetRuler'
+import { Switch } from '@/components/global/Switch'
+
+import { api } from '@/lib/axios'
 
 import { getCharacters, searchCharacters } from '@/utils/marvel'
 
 import { Character, CharacterDataWrapper } from '@/types/marvel'
 
 import { useToast } from '@/contexts/ToastContext'
-import { api } from '@/lib/axios'
-import { AuthContext } from '@/contexts/AuthContext'
-import { Switch } from '@/components/global/Switch'
 
 interface CharactersPageProps {
   charactersData: CharacterDataWrapper
@@ -31,7 +31,7 @@ interface favoriteCharacterProps {
 }
 
 export default function Characters({ charactersData }: CharactersPageProps) {
-  const { user } = useContext(AuthContext)
+  const session = useSession()
 
   const router = useRouter()
 
@@ -64,7 +64,7 @@ export default function Characters({ charactersData }: CharactersPageProps) {
     async function fetchFavoriteCharacters() {
       try {
         const response = await api.get(
-          `/characters/get-favorite-characters?userId=${user?.id}`,
+          `/characters/get-favorite-characters?userId=${session.data?.user.id}`,
         )
         setFavoriteCharacters(response.data)
       } catch (error) {
@@ -72,10 +72,10 @@ export default function Characters({ charactersData }: CharactersPageProps) {
       }
     }
 
-    if (user) {
+    if (session.data?.user) {
       fetchFavoriteCharacters()
     }
-  }, [user, favoriteCharacters])
+  }, [session.data?.user, favoriteCharacters])
 
   function handleNextPage() {
     const nextPage = currentPage + 1
@@ -186,18 +186,18 @@ export default function Characters({ charactersData }: CharactersPageProps) {
   }
 
   return (
-    <div className="grid h-screen grid-cols-dashboard grid-rows-dashboard bg-zinc-600">
-      <div className="row-span-3">
-        <Navbar />
+    <div className="flex h-screen w-full flex-col bg-zinc-600">
+      <div className="w-full">
+        <Header
+          title="Characters"
+          name={session.data?.user.name}
+          avatarUrl={session.data?.user.avatar_url}
+        />
       </div>
 
-      <div className="col-span-2">
-        <Header title="Characters" />
-      </div>
-
-      <div className="col-span-2 col-start-2 row-span-2 row-start-2 overflow-y-scroll bg-home">
-        <div className="mx-auto flex h-full max-w-[1400px] flex-col items-center gap-8 py-12">
-          <Box className="flex w-full items-center justify-between gap-8">
+      <div className="h-full overflow-y-scroll bg-home">
+        <div className="mx-auto flex flex-col items-center gap-4 px-2 py-6 md:px-6 lg:px-12 xl:px-24">
+          <Box className="flex w-full flex-col items-end gap-8 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-4">
               <Input
                 type="text"
@@ -218,13 +218,13 @@ export default function Characters({ charactersData }: CharactersPageProps) {
             <AlphabetRuler onClick={(letter) => handleLetterSelected(letter)} />
           </div>
 
-          <div className="w-full items-center justify-end"></div>
+          <div className="h-full w-full items-center justify-end"></div>
           {isLoading ? (
             <div className="flex h-full w-full items-center justify-center">
               <Loading />
             </div>
           ) : isActive === 'active' ? (
-            <div className="grid grid-cols-4 gap-8 py-8">
+            <div className="grid min-h-full grid-cols-1 gap-8 py-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {searchResults.length > 0
                 ? searchResults.map((character) => {
                     const isCharacterFavorite = favoriteCharacters.some(
@@ -258,7 +258,7 @@ export default function Characters({ charactersData }: CharactersPageProps) {
                   })}
             </div>
           ) : (
-            <div className="grid grid-cols-4 gap-8 py-8">
+            <div className="grid min-h-full grid-cols-1 gap-8 py-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {searchResults.length > 0
                 ? searchResults.map((character) => {
                     const isCharacterFavorite = favoriteCharacters.some(
@@ -288,16 +288,16 @@ export default function Characters({ charactersData }: CharactersPageProps) {
           )}
 
           {!isLoading && isActive === 'inactive' && (
-            <div className="mt-6 flex items-center justify-center gap-4">
+            <div className="flex h-full items-center justify-between gap-4">
               <button
                 onClick={handlePreviousPage}
                 className="flex items-center justify-center"
               >
                 <ChevronLeft className="h-6 w-6 text-zinc-200" />
-                Prev page
+                <span className="hidden md:inline">Prev page</span>
               </button>
 
-              <span>
+              <span className="">
                 Page {currentPage} of {totalPages}
               </span>
 
@@ -305,7 +305,7 @@ export default function Characters({ charactersData }: CharactersPageProps) {
                 onClick={handleNextPage}
                 className="flex items-center justify-center"
               >
-                Next page
+                <span className="hidden md:inline">Next page</span>
                 <ChevronRight className="h-6 w-6 text-zinc-200" />
               </button>
             </div>
@@ -317,11 +317,11 @@ export default function Characters({ charactersData }: CharactersPageProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { query } = context
-  const currentPage = parseInt(query.page as string, 10) || 1
-  const offset = (currentPage - 1) * 20
-
   try {
+    const { query } = context
+    const currentPage = parseInt(query.page as string, 10) || 1
+    const offset = (currentPage - 1) * 20
+
     let charactersData
 
     const letter = query.letter as string
@@ -336,9 +336,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       charactersData = await getCharacters(offset, 20, 'name')
     }
 
+    const session = await getSession(context)
+
+    if (!session) {
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false,
+        },
+      }
+    }
+
     return {
       props: {
         charactersData,
+        session,
       },
     }
   } catch (error) {
@@ -346,6 +358,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
       props: {
         charactersData: { total: 0, results: [] } as CharacterDataWrapper,
+        session: null,
       },
     }
   }

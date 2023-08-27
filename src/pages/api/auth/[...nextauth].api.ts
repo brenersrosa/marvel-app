@@ -9,8 +9,15 @@ export function buildNextAuthOptions(): NextAuthOptions {
     adapter: PrismaAdapter(),
     providers: [
       GoogleProvider({
-        clientId: process.env.GOOGLE_CLIENT_ID as string,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+        clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string,
+        clientSecret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET as string,
+        authorization: {
+          params: {
+            prompt: 'consent',
+            access_type: 'offline',
+            response_type: 'code',
+          },
+        },
         profile(profile: GoogleProfile) {
           return {
             id: profile.sub,
@@ -22,7 +29,7 @@ export function buildNextAuthOptions(): NextAuthOptions {
       }),
     ],
     jwt: {
-      secret: process.env.NEXTAUTH_SECRET,
+      secret: process.env.NEXT_PUBLIC_NEXTAUTH_SECRET,
     },
     callbacks: {
       async session({ session, user }) {

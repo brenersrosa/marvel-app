@@ -6,9 +6,9 @@ import {
   SerieDataWrapper,
 } from '@/types/marvel'
 
-const API_BASE_URL = process.env.API_BASE_URL
-const API_PUBLIC_KEY = process.env.API_PUBLIC_KEY
-const API_PRIVATE_KEY = process.env.API_PRIVATE_KEY
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
+const API_PUBLIC_KEY = process.env.NEXT_PUBLIC_API_PUBLIC_KEY
+const API_PRIVATE_KEY = process.env.NEXT_PUBLIC_API_PRIVATE_KEY
 
 const getTimeStamp = () => Date.now().toString()
 const getHash = (timeStamp: string) =>

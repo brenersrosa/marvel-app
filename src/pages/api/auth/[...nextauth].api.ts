@@ -24,22 +24,8 @@ export function buildNextAuthOptions(): NextAuthOptions {
     jwt: {
       secret: process.env.NEXTAUTH_SECRET,
     },
-    pages: {
-      signIn: '/',
-    },
     callbacks: {
-      // async signIn({ user }) {
-      //   console.log(user)
-
-      //   if (user) {
-      //     return Promise.resolve('/characters')
-      //   }
-
-      //   return Promise.resolve('/')
-      // },
       async session({ session, user }) {
-        console.log(session)
-
         return {
           ...session,
           user,

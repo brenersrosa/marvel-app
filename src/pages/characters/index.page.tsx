@@ -21,6 +21,7 @@ import { getCharacters, searchCharacters } from '@/utils/marvel'
 import { Character, CharacterDataWrapper } from '@/types/marvel'
 
 import { useToast } from '@/contexts/ToastContext'
+import { NextSeo } from 'next-seo'
 
 interface CharactersPageProps {
   charactersData: CharacterDataWrapper
@@ -186,133 +187,139 @@ export default function Characters({ charactersData }: CharactersPageProps) {
   }
 
   return (
-    <div className="flex h-screen w-full flex-col bg-zinc-600">
-      <div className="w-full">
-        <Header
-          title="Characters"
-          name={session.data?.user.name}
-          avatarUrl={session.data?.user.avatar_url}
-        />
-      </div>
+    <>
+      <NextSeo title="Characters | Marvel App" />
 
-      <div className="h-full overflow-y-scroll bg-home">
-        <div className="mx-auto flex flex-col items-center gap-4 px-2 py-6 md:px-6 lg:px-12 xl:px-24">
-          <Box className="flex w-full flex-col items-end gap-8 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex items-center gap-4">
-              <Input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search character by name"
-                onClear={clearSearchInput}
+      <div className="flex h-screen w-full flex-col bg-zinc-600">
+        <div className="w-full">
+          <Header
+            title="Characters"
+            name={session.data?.user.name}
+            avatarUrl={session.data?.user.avatar_url}
+          />
+        </div>
+
+        <div className="h-full overflow-y-scroll bg-home">
+          <div className="mx-auto flex flex-col items-center gap-4 px-2 py-6 md:px-6 lg:px-12 xl:px-24">
+            <Box className="flex w-full flex-col items-end gap-8 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex items-center gap-4">
+                <Input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search character by name"
+                  onClear={clearSearchInput}
+                />
+                <Button icon={<Search />} onClick={handleSearch} />
+              </div>
+
+              <Switch isActive={isActive} onIsActiveChange={setIsActive} />
+
+              <OrderBy onSortChange={handleSortChange} orderBy={orderBy} />
+            </Box>
+
+            <div className="w-full">
+              <AlphabetRuler
+                onClick={(letter) => handleLetterSelected(letter)}
               />
-              <Button icon={<Search />} onClick={handleSearch} />
             </div>
 
-            <Switch isActive={isActive} onIsActiveChange={setIsActive} />
+            <div className="h-full w-full items-center justify-end"></div>
+            {isLoading ? (
+              <div className="flex h-full w-full items-center justify-center">
+                <Loading />
+              </div>
+            ) : isActive === 'active' ? (
+              <div className="grid min-h-full grid-cols-1 gap-8 py-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {searchResults.length > 0
+                  ? searchResults.map((character) => {
+                      const isCharacterFavorite = favoriteCharacters.some(
+                        (fav) => fav.character_id === String(character.id),
+                      )
+                      if (isCharacterFavorite) {
+                        return (
+                          <Card
+                            key={character.id}
+                            character={character}
+                            isFavorite={isCharacterFavorite}
+                          />
+                        )
+                      }
+                      return null
+                    })
+                  : characters.map((character) => {
+                      const isCharacterFavorite = favoriteCharacters.some(
+                        (fav) => fav.character_id === String(character.id),
+                      )
+                      if (isCharacterFavorite) {
+                        return (
+                          <Card
+                            key={character.id}
+                            character={character}
+                            isFavorite={isCharacterFavorite}
+                          />
+                        )
+                      }
+                      return null
+                    })}
+              </div>
+            ) : (
+              <div className="grid min-h-full grid-cols-1 gap-8 py-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {searchResults.length > 0
+                  ? searchResults.map((character) => {
+                      const isCharacterFavorite = favoriteCharacters.some(
+                        (fav) => fav.character_id === String(character.id),
+                      )
+                      return (
+                        <Card
+                          key={character.id}
+                          character={character}
+                          isFavorite={isCharacterFavorite}
+                        />
+                      )
+                    })
+                  : characters.map((character) => {
+                      const isCharacterFavorite = favoriteCharacters.some(
+                        (fav) => fav.character_id === String(character.id),
+                      )
+                      return (
+                        <Card
+                          key={character.id}
+                          character={character}
+                          isFavorite={isCharacterFavorite}
+                        />
+                      )
+                    })}
+              </div>
+            )}
 
-            <OrderBy onSortChange={handleSortChange} orderBy={orderBy} />
-          </Box>
+            {!isLoading && isActive === 'inactive' && (
+              <div className="flex h-full items-center justify-between gap-4">
+                <button
+                  onClick={handlePreviousPage}
+                  className="flex items-center justify-center"
+                >
+                  <ChevronLeft className="h-6 w-6 text-zinc-200" />
+                  <span className="hidden md:inline">Prev page</span>
+                </button>
 
-          <div className="w-full">
-            <AlphabetRuler onClick={(letter) => handleLetterSelected(letter)} />
+                <span className="">
+                  Page {currentPage} of {totalPages}
+                </span>
+
+                <button
+                  onClick={handleNextPage}
+                  className="flex items-center justify-center"
+                >
+                  <span className="hidden md:inline">Next page</span>
+                  <ChevronRight className="h-6 w-6 text-zinc-200" />
+                </button>
+              </div>
+            )}
           </div>
-
-          <div className="h-full w-full items-center justify-end"></div>
-          {isLoading ? (
-            <div className="flex h-full w-full items-center justify-center">
-              <Loading />
-            </div>
-          ) : isActive === 'active' ? (
-            <div className="grid min-h-full grid-cols-1 gap-8 py-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {searchResults.length > 0
-                ? searchResults.map((character) => {
-                    const isCharacterFavorite = favoriteCharacters.some(
-                      (fav) => fav.character_id === String(character.id),
-                    )
-                    if (isCharacterFavorite) {
-                      return (
-                        <Card
-                          key={character.id}
-                          character={character}
-                          isFavorite={isCharacterFavorite}
-                        />
-                      )
-                    }
-                    return null
-                  })
-                : characters.map((character) => {
-                    const isCharacterFavorite = favoriteCharacters.some(
-                      (fav) => fav.character_id === String(character.id),
-                    )
-                    if (isCharacterFavorite) {
-                      return (
-                        <Card
-                          key={character.id}
-                          character={character}
-                          isFavorite={isCharacterFavorite}
-                        />
-                      )
-                    }
-                    return null
-                  })}
-            </div>
-          ) : (
-            <div className="grid min-h-full grid-cols-1 gap-8 py-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {searchResults.length > 0
-                ? searchResults.map((character) => {
-                    const isCharacterFavorite = favoriteCharacters.some(
-                      (fav) => fav.character_id === String(character.id),
-                    )
-                    return (
-                      <Card
-                        key={character.id}
-                        character={character}
-                        isFavorite={isCharacterFavorite}
-                      />
-                    )
-                  })
-                : characters.map((character) => {
-                    const isCharacterFavorite = favoriteCharacters.some(
-                      (fav) => fav.character_id === String(character.id),
-                    )
-                    return (
-                      <Card
-                        key={character.id}
-                        character={character}
-                        isFavorite={isCharacterFavorite}
-                      />
-                    )
-                  })}
-            </div>
-          )}
-
-          {!isLoading && isActive === 'inactive' && (
-            <div className="flex h-full items-center justify-between gap-4">
-              <button
-                onClick={handlePreviousPage}
-                className="flex items-center justify-center"
-              >
-                <ChevronLeft className="h-6 w-6 text-zinc-200" />
-                <span className="hidden md:inline">Prev page</span>
-              </button>
-
-              <span className="">
-                Page {currentPage} of {totalPages}
-              </span>
-
-              <button
-                onClick={handleNextPage}
-                className="flex items-center justify-center"
-              >
-                <span className="hidden md:inline">Next page</span>
-                <ChevronRight className="h-6 w-6 text-zinc-200" />
-              </button>
-            </div>
-          )}
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

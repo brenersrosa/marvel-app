@@ -1,5 +1,6 @@
 import { Changa_One, Nunito, Libre_Barcode_128 } from 'next/font/google'
 import { SessionProvider } from 'next-auth/react'
+import { DefaultSeo } from 'next-seo'
 
 import type { AppProps } from 'next/app'
 
@@ -30,6 +31,14 @@ export default function App({
 }: AppProps) {
   return (
     <SessionProvider session={session}>
+      <DefaultSeo
+        openGraph={{
+          type: 'website',
+          locale: 'en_IE',
+          url: 'https://marvel-app-lake.vercel.app/',
+          siteName: 'Marvel App',
+        }}
+      />
       <ToastProvider>
         <main
           className={`${changaOne.variable} ${nunito.variable} ${libreBarCode.variable} font-sans`}
